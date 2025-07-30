@@ -172,6 +172,13 @@
       </configItem>
     </model>
     <model>
+        <configItem>
+            <name>blackberry-key2</name>
+            <description>BlackBerry KEY2</description>
+            <vendor>BlackBerry</vendor>
+        </configItem>
+    </model>
+    <model>
       <configItem>
         <name>brother</name>
         <description>Brother Internet</description>
