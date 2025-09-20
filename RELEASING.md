@@ -6,6 +6,24 @@
 
 ### Steps
 
+#### Prepare the translations
+
+- [ ] Create a release branch: `git checkout -b release/MAJOR.PREV_MINOR.99 master`
+
+- [ ] Bump the `version` in `meson.build` to MAJOR.PREV_MINOR_99.
+
+- [ ] Run `meson setup buildddir; ninja -C builddir dist` to make sure the release is good to go.
+
+- [ ] Run `meson compile xkeyboard-config-pot` in builddir to update xkeyboard-config.pot file in po subdirectory.
+
+- [ ] Commit meson.dist and po/xkeyboard-config.pot to the branch
+
+- [ ] Merge the branch release/MAJOR.PREV_MINOR.99 to master on gitlab 
+
+- [ ] Send po/xkeyboard-config.pot and builddir/meson-dist/xkeyboard-config-MAJOR.PREV_MINOR.tar.xz to Translation Project asking for translations update: coordinator@translationproject.org
+
+- [ ] Give Translation Project 2 weeks to update translations
+
 #### Prepare the release
 
 - [ ] Ensure there is no issue in the tracker blocking the release. Make sure
@@ -19,7 +37,9 @@
 
 - [ ] Bump the `version` in `meson.build`.
 
-- [ ] Run `meson dist -C build` to make sure the release is good to go.
+- [ ] Pull the latest translations from Translation Project by executing `scripts/pull_translations.sh`
+
+- [ ] Run `meson setup buildddir; ninja -C builddir dist` to make sure the release is good to go.
 
 - [ ] Commit `git commit -m 'New version MAJOR.MINOR'`.
 
