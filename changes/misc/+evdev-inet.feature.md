@@ -20,7 +20,9 @@ inet: Added mapping to the following new keysyms:
 - `XF86Fn_S`
 - `XF86Fn_B`
 - `XF86PerformanceMode`
+- `XF86AudioBassBoost`
 
-Relevant upstream merge request: [xorgproto-103].
+Relevant upstream merge requests: [xorgproto-102] and [xorgproto-103].
 
-[xorgproto-93]: https://gitlab.freedesktop.org/xorg/proto/xorgproto/-/merge_requests/103
+[xorgproto-102]: https://gitlab.freedesktop.org/xorg/proto/xorgproto/-/merge_requests/102
+[xorgproto-103]: https://gitlab.freedesktop.org/xorg/proto/xorgproto/-/merge_requests/103
