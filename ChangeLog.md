@@ -2,33 +2,16 @@ xkeyboard-config [2.47] - 2026-02-23
 ====================================
 
 [2.47]: https://gitlab.freedesktop.org/xkeyboard-config/xkeyboard-config/-/tree/xkeyboard-config-2.47
-================================================================================================================================================================================
-Models
-------
 
-No significant changes.
+# Layouts
 
-
-Layouts
--------
-
-New
-~~~
+## New
 
 - Added the Slavistic Phonetic Alphabet variant for Polish
 
+# Miscellaneous
 
-Options
--------
-
-No significant changes.
-
-
-Miscellaneous
--------------
-
-Breaking changes
-~~~~~~~~~~~~~~~~
+## Breaking changes
 
 - Made <ZEHA> behave like <FK24>
 
@@ -36,20 +19,11 @@ Breaking changes
   unused <ZEHA> keycode. v6.17 fixed this. To have a consistent behaviour across
   kernel versions, make both <ZEHA> and <FK24> behave the same.
 
-
-New
-~~~
+## New
 
 - Added keycodes from recent Linux kernels:
   - `<I455>` for `KEY_LINK_PHONE`
   - `<I709>` for `KEY_PERFORMANCE`
-- Implemented F19
-
-  Map F19 for the rare occasion that it exists e.g. on custom keyboards.
-- Implemented F24
-
-  Map F24, which has a special alt function as pressing the touchpad toggle key on
-  some notebooks produces the key sequence `Super + Control + F24`.
 - inet: Added mapping to the following new keysyms:
   - `XF86LinkPhone`
   - `XF86Fn_F1`
@@ -78,12 +52,9 @@ New
 
   [xorgproto-102]: https://gitlab.freedesktop.org/xorg/proto/xorgproto/-/merge_requests/102
   [xorgproto-103]: https://gitlab.freedesktop.org/xorg/proto/xorgproto/-/merge_requests/103
-
-
-Build system
-------------
-
-No significant changes.
+- inet: Mapped `F19` for the rare occasion that it exists e.g. on custom keyboards.
+- inet: Mapped `F24`, which has a special alternative function as pressing the
+  touchpad toggle key on some notebooks produces the key sequence `Super + Control + F24`.
 
 
 xkeyboard-config [2.46] - 2025-09-30
