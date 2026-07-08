@@ -8021,6 +8021,30 @@
       </option>
       <option>
         <configItem>
+          <name>meta:mod2</name>
+          <description>Map Meta to Mod2 (conflict with NumLock)</description>
+        </configItem>
+      </option>
+      <option>
+        <configItem>
+          <name>meta:mod3</name>
+          <description>Map Meta to Mod3 (conflict with LevelFive)</description>
+        </configItem>
+      </option>
+      <option>
+        <configItem>
+          <name>meta:mod4</name>
+          <description>Map Meta to Mod4 (conflict with Super)</description>
+        </configItem>
+      </option>
+      <option>
+        <configItem>
+          <name>meta:mod5</name>
+          <description>Map Meta to Mod5 (conflict with LevelThree)</description>
+        </configItem>
+      </option>
+      <option>
+        <configItem>
           <name>scrolllock:mod3</name>
           <description>Map Scroll Lock to Mod3</description>
         </configItem>
