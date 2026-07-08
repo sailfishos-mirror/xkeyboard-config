@@ -361,6 +361,57 @@ class TestIssue382:
             assert r.consumed_mods == Shift
 
 
+# https://gitlab.freedesktop.org/xkeyboard-config/xkeyboard-config/-/issues/514
+@pytest.mark.parametrize(
+    "layout,variant,options,meta_encoding,conflicting_mod_name",
+    [
+        ("us", "colemak_dh", "altwin:meta_win,lv3:ralt_switch", Mod4, "Super"),
+        (
+            "us",
+            "colemak_dh",
+            "altwin:meta_win,lv3:ralt_switch,meta:mod3",
+            Mod3,
+            "Level5",
+        ),
+    ],
+)
+class TestIssue514:
+    def test_LevelThree(
+        self, keymap: Keymap, meta_encoding: ModifierMask, conflicting_mod_name: str
+    ):
+        """LevelThree is encoded as: Mod5"""
+        with keymap.key_down("RALT"):
+            r = keymap.tap_and_check("AD01", "adiaeresis", level=3)
+            Level3 = keymap.Level3 if keymap.has_vmod_queries else NoModifier
+            assert r.active_mods == Mod5 | Level3 == r.consumed_mods
+
+    def test_Alt(
+        self, keymap: Keymap, meta_encoding: ModifierMask, conflicting_mod_name: str
+    ):
+        """Alt is encoded as Mod1"""
+        Alt = keymap.Alt if keymap.has_vmod_queries else NoModifier
+        with keymap.key_down("LALT"):
+            r = keymap.tap_and_check("AD01", "q", level=1)
+            assert r.active_mods == Mod1 | Alt
+            assert r.consumed_mods == NoModifier
+
+    def test_Meta(
+        self, keymap: Keymap, meta_encoding: ModifierMask, conflicting_mod_name: str
+    ):
+        """Meta is encoded as either Mod3 or Mod4"""
+        Meta = keymap.Meta if keymap.has_vmod_queries else NoModifier
+        # Conflicting modififier depends on the option `meta:mod*`
+        conflicting_mod = (
+            getattr(keymap, conflicting_mod_name, NoModifier)
+            if keymap.has_vmod_queries
+            else NoModifier
+        )
+        with keymap.key_down("LWIN"):
+            r = keymap.tap_and_check("AD01", "q", level=1)
+            assert r.active_mods == meta_encoding | Meta | conflicting_mod
+            assert r.consumed_mods == NoModifier
+
+
 # https://gitlab.freedesktop.org/xkeyboard-config/xkeyboard-config/-/issues/90
 # https://gitlab.freedesktop.org/xkeyboard-config/xkeyboard-config/-/issues/346
 class TestIssues90And346:
