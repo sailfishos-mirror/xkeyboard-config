@@ -8015,6 +8015,12 @@
       </option>
       <option>
         <configItem>
+          <name>hyper:mod5</name>
+          <description>Map Hyper to Mod5 (conflict with LevelThree)</description>
+        </configItem>
+      </option>
+      <option>
+        <configItem>
           <name>scrolllock:mod3</name>
           <description>Map Scroll Lock to Mod3</description>
         </configItem>
