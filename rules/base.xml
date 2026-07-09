@@ -1852,6 +1852,12 @@
         </variant>
         <variant>
           <configItem>
+            <name>typographic</name>
+            <description>Belarusian (typo.)</description>
+          </configItem>
+        </variant>
+        <variant>
+          <configItem>
             <name>ru</name>
             <description>Russian (Belarus)</description>
             <languageList>
