@@ -16,6 +16,7 @@ from xkbcommon import (
     Control,
     Lock,
     Mod1,
+    Mod2,
     Mod3,
     Mod4,
     Mod5,
@@ -91,6 +92,7 @@ class Keymap:
     Meta: int
     Super: int
     Hyper: int
+    Num: int
     Level3: int
     Level5: int
 
@@ -112,6 +114,8 @@ class Keymap:
         self.Super = (1 << mod) if mod != xkbcommon.XKB_MOD_INVALID else 0
         mod = xkbcommon.xkb_keymap_mod_get_index(keymap, "Hyper")
         self.Hyper = (1 << mod) if mod != xkbcommon.XKB_MOD_INVALID else 0
+        mod = xkbcommon.xkb_keymap_mod_get_index(keymap, "NumLock")
+        self.Num = (1 << mod) if mod != xkbcommon.XKB_MOD_INVALID else 0
         mod = xkbcommon.xkb_keymap_mod_get_index(keymap, "LevelThree")
         self.Level3 = (1 << mod) if mod != xkbcommon.XKB_MOD_INVALID else 0
         mod = xkbcommon.xkb_keymap_mod_get_index(keymap, "LevelFive")
@@ -363,21 +367,30 @@ class TestIssue382:
 
 # https://gitlab.freedesktop.org/xkeyboard-config/xkeyboard-config/-/issues/514
 @pytest.mark.parametrize(
-    "layout,variant,options,meta_encoding,conflicting_mod_name",
+    "layout,variant,options,meta_key,meta_encoding,conflicting_mod_name",
     [
-        ("us", "colemak_dh", "altwin:meta_win,lv3:ralt_switch", Mod4, "Super"),
+        # altwin:meta_win + lv3:ralt_switch
+        ("us", "colemak_dh", "altwin:meta_win,lv3:ralt_switch", "LWIN", Mod4, "Super"),
         (
             "us",
             "colemak_dh",
             "altwin:meta_win,lv3:ralt_switch,meta:mod3",
+            "LWIN",
             Mod3,
             "Level5",
         ),
+        # ctrl:lctrl_meta
+        ("us", "colemak_dh", "ctrl:lctrl_meta", "LCTL", Mod4, "Super"),
+        ("us", "colemak_dh", "ctrl:lctrl_meta,meta:mod2", "LCTL", Mod2, "Num"),
     ],
 )
 class TestIssue514:
     def test_LevelThree(
-        self, keymap: Keymap, meta_encoding: ModifierMask, conflicting_mod_name: str
+        self,
+        keymap: Keymap,
+        meta_key: str,
+        meta_encoding: ModifierMask,
+        conflicting_mod_name: str,
     ):
         """LevelThree is encoded as: Mod5"""
         with keymap.key_down("RALT"):
@@ -386,7 +399,11 @@ class TestIssue514:
             assert r.active_mods == Mod5 | Level3 == r.consumed_mods
 
     def test_Alt(
-        self, keymap: Keymap, meta_encoding: ModifierMask, conflicting_mod_name: str
+        self,
+        keymap: Keymap,
+        meta_key: str,
+        meta_encoding: ModifierMask,
+        conflicting_mod_name: str,
     ):
         """Alt is encoded as Mod1"""
         Alt = keymap.Alt if keymap.has_vmod_queries else NoModifier
@@ -396,9 +413,13 @@ class TestIssue514:
             assert r.consumed_mods == NoModifier
 
     def test_Meta(
-        self, keymap: Keymap, meta_encoding: ModifierMask, conflicting_mod_name: str
+        self,
+        keymap: Keymap,
+        meta_key: str,
+        meta_encoding: ModifierMask,
+        conflicting_mod_name: str,
     ):
-        """Meta is encoded as either Mod3 or Mod4"""
+        """Meta is encoded as Mod2, Mod3 or Mod4"""
         Meta = keymap.Meta if keymap.has_vmod_queries else NoModifier
         # Conflicting modififier depends on the option `meta:mod*`
         conflicting_mod = (
@@ -406,7 +427,7 @@ class TestIssue514:
             if keymap.has_vmod_queries
             else NoModifier
         )
-        with keymap.key_down("LWIN"):
+        with keymap.key_down(meta_key):
             r = keymap.tap_and_check("AD01", "q", level=1)
             assert r.active_mods == meta_encoding | Meta | conflicting_mod
             assert r.consumed_mods == NoModifier
