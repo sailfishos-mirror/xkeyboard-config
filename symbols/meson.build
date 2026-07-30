@@ -13,8 +13,7 @@ symlinks = [
 ]
 excluded_symbols = symlinks + ['meson.build']
 if get_option('compat-rules')
-    layout_mappings = files('../rules/compat/layoutsMapping.lst')
-    variant_mappings = files('../rules/compat/variantsMapping.lst')
+    migrations = files('../rules/compat/migrations.lst')
     cmd = [
         'python3',
         '-m',
@@ -32,7 +31,7 @@ if get_option('compat-rules')
         'compat-symbols',
         command: cmd,
         env: cmd_env,
-        depend_files: [variant_mappings],
+        depend_files: [migrations],
         install: true,
         install_dir: dir_xkb_base / 'symbols',
         output: compat_symbols

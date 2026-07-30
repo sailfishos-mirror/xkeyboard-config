@@ -48,8 +48,7 @@ def generate_rules(
 
     # Compat mappings (aliases)
     compat_mappings = CompatMappings.load(
-        layouts_path=RULES / "compat" / "layoutsMapping.lst" if compat else None,
-        variants_path=RULES / "compat" / "variantsMapping.lst" if compat else None,
+        migrations_path=RULES / "compat" / "migrations.lst" if compat else None,
         vendors_path=RULES / "compat" / "variantsMapping-vendors.lst",
         skip_if_source_file_exists=True,
     )
@@ -58,8 +57,15 @@ def generate_rules(
         groups=groups,
         ruleset=ruleset,
         compat=compat,
-        layouts_compat_mappings=compat_mappings.layouts,
-        variants_compat_mappings=compat_mappings.variants + compat_mappings.vendors,
+        layouts_compat_mappings=sorted(
+            e for e in compat_mappings.migrations if not e.source.variant
+        ),
+        variants_compat_mappings=sorted(
+            itertools.chain(
+                (e for e in compat_mappings.migrations if e.source.variant),
+                compat_mappings.vendors,
+            )
+        ),
         options=options,
     )
     return RulesFile.render(rules.splitlines(), version=version, debug=debug)
@@ -84,14 +90,15 @@ def generate_symbols(destination: Path) -> Iterable[SymbolsFile]:
     Append xkb_symbols compat entries
     """
     mappings = CompatMappings.load(
-        variants_path=RULES / "compat" / "variantsMapping.lst",
+        migrations_path=RULES / "compat" / "migrations.lst",
         skip_if_source_file_exists=False,
     )
 
     # Group by alias symbol file
     files = defaultdict(list)
-    for mapping in mappings.variants:
-        files[mapping.source.layout].append(mapping)
+    for mapping in mappings.migrations:
+        if mapping.source.variant:
+            files[mapping.source.layout].append(mapping)
 
     for filename, mappings in files.items():
         src_path: Path = SYMBOLS / filename

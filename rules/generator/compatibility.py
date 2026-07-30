@@ -105,16 +105,11 @@ class CompatSymbolsMapping:
             destination = tuple(
                 Layout.parse(p, symbols_prefix=parts[1]) for p in parts[3].split("+")
             )
+        elif len(parts) == 2:
+            source = Layout.parse(parts[0])
+            destination = tuple(map(Layout.parse, parts[1].split("+")))
         else:
-            match len(parts):
-                case 2:
-                    source = Layout.parse(parts[0])
-                    destination = (Layout.parse(parts[1]),)
-                case 4:
-                    source = Layout(layout=parts[0], variant=parts[1])
-                    destination = (Layout(layout=parts[2], variant=parts[3]),)
-                case _:
-                    raise ValueError(raw)
+            raise ValueError(raw)
 
         return cls(source=source, destination=destination)
 
@@ -124,6 +119,7 @@ class CompatSymbolsMapping:
     ) -> Iterable[Self]:
         for line in lines:
             line, *_ = line.split("//")
+            line = line.strip()
             if not line:
                 continue
             yield cls.parse(line, is_vendor_symbols)
@@ -142,15 +138,13 @@ class CompatSymbolsMapping:
 
 @dataclass(frozen=True)
 class CompatMappings:
-    layouts: Sequence[CompatSymbolsMapping]
-    variants: Sequence[CompatSymbolsMapping]
+    migrations: Sequence[CompatSymbolsMapping]
     vendors: Sequence[CompatSymbolsMapping]
 
     @classmethod
     def load(
         cls,
-        layouts_path: Path | None = None,
-        variants_path: Path | None = None,
+        migrations_path: Path | None = None,
         vendors_path: Path | None = None,
         skip_if_source_file_exists: bool = True,
     ) -> Self:
@@ -159,9 +153,9 @@ class CompatMappings:
                 not (SYMBOLS / layout.source.layout).is_file()
             )
 
-        if layouts_path:
-            with layouts_path.open("rt", encoding="utf-8") as fd:
-                layouts = sorted(
+        if migrations_path:
+            with migrations_path.open("rt", encoding="utf-8") as fd:
+                migrations = sorted(
                     filter(
                         functools.partial(
                             check_symbols,
@@ -171,21 +165,7 @@ class CompatMappings:
                     )
                 )
         else:
-            layouts = []
-
-        if variants_path:
-            with variants_path.open("rt", encoding="utf-8") as fd:
-                variants = sorted(
-                    filter(
-                        functools.partial(
-                            check_symbols,
-                            skip_if_source_file_exists=skip_if_source_file_exists,
-                        ),
-                        CompatSymbolsMapping.parse_iter(fd, is_vendor_symbols=False),
-                    )
-                )
-        else:
-            variants = []
+            migrations = []
 
         if vendors_path:
             with vendors_path.open("rt", encoding="utf-8") as fd:
@@ -195,4 +175,4 @@ class CompatMappings:
         else:
             vendors = []
 
-        return cls(layouts=layouts, variants=variants, vendors=vendors)
+        return cls(migrations=migrations, vendors=vendors)
