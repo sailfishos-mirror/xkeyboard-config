@@ -25,21 +25,23 @@ assert SYMBOLS.is_dir(), (
 @dataclass(frozen=True, order=False)
 class Layout:
     PATTERN: ClassVar[re.Pattern[str]] = re.compile(
-        r"(?P<layout>[^(]+)\((?P<variant>[^)]+)\)"
+        r"(?P<layout>[^(:]+)(?:\((?P<variant>[^)]+)\))?(?::(?P<modifier>\d+))?"
     )
     DEFAULT_MODEL: ClassVar[str] = "*"
     DEFAULT_SYMBOLS_PREFIX: ClassVar[str] = "pc"
 
     layout: str
     variant: str
+    modifier: str = ""
     model: str = DEFAULT_MODEL
     symbols_prefix: str = DEFAULT_SYMBOLS_PREFIX
 
     def __str__(self) -> str:
+        modifier = f":{self.modifier}" if self.modifier else ""
         if self.variant:
-            return f"{self.layout}({self.variant})"
+            return f"{self.layout}({self.variant}){modifier}"
         else:
-            return self.layout
+            return self.layout + modifier
 
     def __lt__(self, other):
         """
@@ -75,14 +77,13 @@ class Layout:
         if m := cls.PATTERN.match(raw):
             return cls(
                 layout=m.group("layout"),
-                variant=m.group("variant"),
+                variant=m.group("variant") or "",
+                modifier=m.group("modifier") or "",
                 model=model,
                 symbols_prefix=symbols_prefix,
             )
         else:
-            return cls(
-                layout=raw, variant="", model=model, symbols_prefix=symbols_prefix
-            )
+            raise ValueError(raw)
 
 
 @dataclass(frozen=True, order=True)
