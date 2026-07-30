@@ -47,9 +47,6 @@
 // TypeMatrix geometries
 ! $tmgeometries = tm2020 tm2030PS2 tm2030USB tm2030USB-102 tm2030USB-106
 
-// Country files that provide specializations for the OLPC:
-! $olpclayouts = af am ara br ca es et fr in it kh kz mn ng np pk ru th tr us
-
 ! $applealu = applealu_ansi applealu_iso applealu_jis
 
 ! $macvendorlayouts = ch de dk fi fr gb is it latam nl no pt se us
@@ -60,9 +57,14 @@
 ! $mac_dk_variants = macbookpro nodeadkeys
 ! $mac_pt_variants = nodeadkeys Sundeadkeys sundeadkeys
 
-// The countries that predominantly have AZERTY or QWERTZ layouts:
-! $azerty = be fr
-! $qwertz = al ch cz de hr hu ro si sk
+// OLPC (One Laptop per Child) models
+! $olpc = olpc olpcm
+
+// Country files that provide specializations for the OLPC:
+! $olpclayouts = af am ara br ca es et fr in it kh kz mn ng np pk ru th tr us
+
+// Sharp models
+! $sharp = sl-c3x00 ws003sh ws007sh ws011sh ws020sh
 
 ! $thinkpads = thinkpad thinkpad60 thinkpadz60
 
@@ -141,6 +143,10 @@
 
 # endif
 
+// The countries that predominantly have AZERTY or QWERTZ layouts:
+! $azerty = be fr
+! $qwertz = al ch cz de hr hu ro si sk
+
 # if ruleset == "base":
 ! model		=	keycodes
   amiga		=	amiga(de)
@@ -157,8 +163,7 @@
 
 ! model		=	keycodes
  $jollamodels	=	evdev+jolla(jolla)
-  olpc		=	evdev+olpc(olpc)
-  olpcm		=	evdev+olpc(olpcm)
+ $olpc		=	evdev+olpc(%m)
   *		=	evdev
 # endif
 
@@ -231,16 +236,10 @@
   applealu_iso	 us			=	macintosh_vndr/apple(alukbd)+macintosh_vndr/us(applealu_iso)
  $applealu	$macvendorlayouts	=	macintosh_vndr/apple(alukbd)+macintosh_vndr/%l
  $applealu	 *			=	macintosh_vndr/apple(alukbd)+%l%(v)
-  olpc		$olpclayouts		=	olpc+%l%(m)
-  olpc		 *			=	olpc+%l%(v)
-  olpcm		$olpclayouts		=	olpc+%l%(m)
-  olpcm		 *			=	olpc+%l%(v)
+ $olpc		$olpclayouts		=	olpc+%l%(m)
+ $olpc		 *			=	olpc+%l%(v)
  $thinkpads	 br			=	pc+br(thinkpad)
-  sl-c3x00	 *			=	pc+sharp_vndr/sl-c3x00(basic)
-  ws003sh	 *			=	pc+sharp_vndr/ws003sh(basic)
-  ws007sh	 *			=	pc+sharp_vndr/ws007sh(basic)
-  ws011sh	 *			=	pc+sharp_vndr/ws011sh(basic)
-  ws020sh	 *			=	pc+sharp_vndr/ws020sh(basic)
+ $sharp		 *			=	pc+sharp_vndr/%m(basic)
   *		 *			=	pc+%l%(v)
 
 # if variants_compat_mappings:
@@ -372,8 +371,7 @@
 ! model		layout[single]	=	compat
   pc98		jp		=	pc98(basic)
   *		jp		=	complete+japan
-  olpc		*		=	olpc
-  olpcm		*		=	olpc
+ $olpc		*		=	olpc
   *		*		=	complete
 
 ! model		layout[1]	=	compat
