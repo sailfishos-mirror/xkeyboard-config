@@ -48,27 +48,22 @@ class Layout:
         if not isinstance(other, self.__class__):
             return NotImplemented
         elif self.model != other.model:
-            if (self.model == "*") ^ (other.model == "*"):
-                return other.model == "*"
-            else:
-                return self.model < other.model
-        elif (self.layout == "*") ^ (other.layout == "*"):
-            return other.layout == "*"
-        elif self.layout.startswith("$") ^ other.layout.startswith("$"):
-            return other.layout.startswith("$")
-        elif self.layout == other.layout:
-            if self.variant == other.variant:
-                return False
-            # Handle missing variant
-            elif self.variant and (not other.variant or other.variant == "*"):
-                return True
-            # Handle missing variant
-            elif (not self.variant or self.variant == "*") and other.variant:
-                return False
-            else:
-                return self.variant < other.variant
+            return self._lt(self.model, other.model)
+        elif self.layout != other.layout:
+            return self._lt(self.layout, other.layout)
+        elif self.variant != other.variant:
+            return self._lt(self.variant, other.variant)
         else:
-            return self.layout < other.layout
+            return False
+
+    @classmethod
+    def _lt(cls, a: str, b: str) -> bool:
+        if (not a or a == "*") ^ (not b or b == "*"):
+            return not b or b == "*"
+        elif a.startswith("$") ^ b.startswith("$"):
+            return b.startswith("$")
+        else:
+            return a < b
 
     @classmethod
     def parse(
