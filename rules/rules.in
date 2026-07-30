@@ -210,16 +210,17 @@
   sun_type7_unix_usb	=	sun(type7unix)
   *			=	pc(pc104)
 
-# if variants_compat_mappings:
-! model		layout		variant	=	symbols
-#     for e in variants_compat_mappings:
-  {e.source.model}	{e.source.layout}	{e.source.variant}	=	{e.destination[0].symbols_prefix}+{e.join(e.destination)}
-#     endfor
 
-# endif
+! model		layout		variant	=	symbols
+# for e in migrations_variants_mappings:
+  {e.source.model}	{e.source.layout}	{e.source.variant}	=	{e.destination[0].symbols_prefix}+{e.join(e.destination)}
+# endfor
+# for e in vendors_variants_mappings:
+  {e.source.model}	{e.source.layout}	{e.source.variant}	=	{e.destination[0].symbols_prefix}+{e.join(e.destination)}
+# endfor
 
 ! model		 layout			=	symbols
-# for e in layouts_compat_mappings:
+# for e in migrations_layouts_mappings:
   {e.source.model}	{e.source.layout}	=	{e.destination[0].symbols_prefix}+{e.join(e.destination)}
 # endfor
   ataritt	 *			=	xfree68_vndr/ataritt(us)+%l%(v)
@@ -242,16 +243,16 @@
  $sharp		 *			=	pc+sharp_vndr/%m(basic)
   *		 *			=	pc+%l%(v)
 
-# if variants_compat_mappings:
 ! model		layout[1]		variant[1]	=	symbols
-#     for e in variants_compat_mappings:
+# for e in migrations_variants_mappings:
   {e.source.model}	{e.source.layout}	{e.source.variant}	=	{e.destination[0].symbols_prefix}+{e.join(e.destination)}
-#     endfor
-
-# endif
+# endfor
+# for e in vendors_variants_mappings:
+  {e.source.model}	{e.source.layout}	{e.source.variant}	=	{e.destination[0].symbols_prefix}+{e.join(e.destination)}
+# endfor
 
 ! model		layout[1]			=	symbols
-# for e in layouts_compat_mappings:
+# for e in migrations_layouts_mappings:
   {e.source.model}	{e.source.layout}	=	{e.destination[0].symbols_prefix}+{e.join(e.destination)}
 # endfor
   ataritt	 *				=	xfree68_vndr/ataritt(us)+%l[1]%(v[1])
@@ -266,7 +267,7 @@
   *		 *				=	pc+%l[1]%(v[1])
 
 ! model		layout[later]		=	symbols
-# for e in layouts_compat_mappings:
+# for e in migrations_layouts_mappings:
   {e.source.model}	{e.source.layout}	=	+{e.join(e.destination, modifier="%i")}
 # endfor
   applealu_iso	 us			=	+macintosh_vndr/us(applealu_iso):%i
@@ -274,13 +275,13 @@
  $sun		$sun_custom		=	+sun_vndr/%l[%i]:%i
   *		 *			=	+%l[%i]%(v[%i]):%i
 
-# if variants_compat_mappings:
 ! model		layout[later]		variant[later]	=	symbols
-#     for e in variants_compat_mappings:
+# for e in migrations_variants_mappings:
   {e.source.model}	{e.source.layout}	{e.source.variant}	=	+{e.join(e.destination, modifier="%i")}
-#     endfor
-
-# endif
+# endfor
+# for e in vendors_variants_mappings:
+  {e.source.model}	{e.source.layout}	{e.source.variant}	=	+{e.join(e.destination, modifier="%i")}
+# endfor
 
 # if ruleset == "base":
 ! model			=	symbols

@@ -35,8 +35,9 @@ def generate_rules(
         groups=(),
         ruleset=ruleset,
         compat=compat,
-        layouts_compat_mappings=[],
-        variants_compat_mappings=[],
+        migrations_layouts_mappings=[],
+        migrations_variants_mappings=[],
+        vendors_variants_mappings=[],
         options=defaultdict(tuple),
     )
     options = {
@@ -57,15 +58,13 @@ def generate_rules(
         groups=groups,
         ruleset=ruleset,
         compat=compat,
-        layouts_compat_mappings=sorted(
+        migrations_layouts_mappings=sorted(
             e for e in compat_mappings.migrations if not e.source.variant
         ),
-        variants_compat_mappings=sorted(
-            itertools.chain(
-                (e for e in compat_mappings.migrations if e.source.variant),
-                compat_mappings.vendors,
-            )
+        migrations_variants_mappings=sorted(
+            e for e in compat_mappings.migrations if e.source.variant
         ),
+        vendors_variants_mappings=compat_mappings.vendors,
         options=options,
     )
     return RulesFile.render(rules.splitlines(), version=version, debug=debug)
