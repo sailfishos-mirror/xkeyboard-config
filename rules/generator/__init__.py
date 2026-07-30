@@ -113,7 +113,7 @@ def generate_symbols(destination: Path) -> Iterable[SymbolsFile]:
         # Add compat sections
         for m in mappings:
             content += SYMBOLS_TEMPLATE.substitute(
-                alias=m.source.variant, target=m.destination
+                alias=m.source.variant, target=m.join(m.destination)
             )
 
         yield SymbolsFile(path=destination / filename, content=content)

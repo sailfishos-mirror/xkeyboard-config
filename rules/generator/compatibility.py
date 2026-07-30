@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import dataclasses
 import functools
 import re
 import textwrap
@@ -89,7 +90,7 @@ class Layout:
 @dataclass(frozen=True, order=True)
 class CompatSymbolsMapping:
     source: Layout
-    destination: Layout
+    destination: tuple[Layout, ...]
 
     @classmethod
     def parse(cls, raw: str, is_vendor_symbols: bool) -> Self:
@@ -101,15 +102,17 @@ class CompatSymbolsMapping:
             if len(parts) != 4:
                 raise ValueError(raw)
             source = Layout.parse(parts[2], model=parts[0])
-            destination = Layout.parse(parts[3], symbols_prefix=parts[1])
+            destination = tuple(
+                Layout.parse(p, symbols_prefix=parts[1]) for p in parts[3].split("+")
+            )
         else:
             match len(parts):
                 case 2:
                     source = Layout.parse(parts[0])
-                    destination = Layout.parse(parts[1])
+                    destination = (Layout.parse(parts[1]),)
                 case 4:
                     source = Layout(layout=parts[0], variant=parts[1])
-                    destination = Layout(layout=parts[2], variant=parts[3])
+                    destination = (Layout(layout=parts[2], variant=parts[3]),)
                 case _:
                     raise ValueError(raw)
 
@@ -129,6 +132,12 @@ class CompatSymbolsMapping:
     def parse_array(cls, raw: str, is_vendor_symbols: bool) -> Iterable[Self]:
         lines = textwrap.dedent(raw).splitlines()
         yield from cls.parse_iter(lines, is_vendor_symbols=is_vendor_symbols)
+
+    def join(self, destination: tuple[Layout, ...], modifier: str = "", sep: str = "+"):
+        return sep.join(
+            str(dataclasses.replace(d, modifier=modifier) if modifier else d)
+            for d in destination
+        )
 
 
 @dataclass(frozen=True)

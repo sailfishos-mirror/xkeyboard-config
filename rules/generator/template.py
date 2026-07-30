@@ -78,6 +78,7 @@ class Template:
         ast.For,
         ast.Subscript,
         ast.Call,
+        ast.keyword,
         ast.Or,
         ast.And,
         ast.Not,
@@ -128,9 +129,7 @@ class Template:
                 # Only allow `.items()`
                 if (
                     not isinstance(node.func, ast.Attribute)
-                    or node.func.attr != "items"
-                    or node.args
-                    or node.keywords
+                    or node.func.attr not in ("items", "join")
                 ) and (
                     not isinstance(node.func, ast.Name)
                     or node.func.id not in cls.SAFE_FUNCTIONS
@@ -167,7 +166,7 @@ class Template:
                 yield indent + f"yield f{repr(line)}"
 
     @classmethod
-    def _is_simple(cls, node: ast.JoinedStr) -> bool:
+    def _is_simple(cls, node: ast.AST) -> bool:
         match node:
             case ast.Constant(value=value):
                 return True
@@ -180,10 +179,40 @@ class Template:
     def _is_simple_expr(cls, node: ast.AST) -> bool:
         """Only allow plain names and attribute access chains"""
         match node:
+            case ast.Constant(value=value):
+                return True
             case ast.Name():
                 return not node.id.startswith("_")
             case ast.Attribute(value=inner, attr=attr_):
                 return cls._is_simple_expr(inner) and not attr_.startswith("_")
+            case ast.Subscript():
+                # Only allow `xxx[yyy]` where yyy is a constant that does not start with "_"
+                match node.slice:
+                    case ast.Constant(value=str(s)) if s.startswith("_"):
+                        raise PermissionError(
+                            f"Access to private subscript '{s}' is forbidden."
+                        )
+                    case ast.Constant():
+                        pass  # int, non-private string: fine
+                    case _:
+                        raise PermissionError(f"Non-constant subscript is forbidden.")
+                return True
+            case ast.Call():
+                if (
+                    not isinstance(node.func, ast.Attribute)
+                    or node.func.attr not in ("items", "join")
+                ) and (
+                    not isinstance(node.func, ast.Name)
+                    or node.func.id not in cls.SAFE_FUNCTIONS
+                ):
+                    raise PermissionError(
+                        f"Access to function '{node.func}' is forbidden."
+                    )
+                return all(map(cls._is_simple_expr, node.args)) and all(
+                    map(cls._is_simple_expr, node.keywords)
+                )
+            case ast.keyword():
+                return cls._is_simple_expr(node.value)
             case _:
                 return False
 

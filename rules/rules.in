@@ -213,14 +213,14 @@
 # if variants_compat_mappings:
 ! model		layout		variant	=	symbols
 #     for e in variants_compat_mappings:
-  {e.source.model}	{e.source.layout}	{e.source.variant}	=	{e.destination.symbols_prefix}+{e.destination}
+  {e.source.model}	{e.source.layout}	{e.source.variant}	=	{e.destination[0].symbols_prefix}+{e.join(e.destination)}
 #     endfor
 
 # endif
 
 ! model		 layout			=	symbols
 # for e in layouts_compat_mappings:
-  {e.source.model}	{e.source.layout}	=	{e.destination.symbols_prefix}+{e.destination}
+  {e.source.model}	{e.source.layout}	=	{e.destination[0].symbols_prefix}+{e.join(e.destination)}
 # endfor
   ataritt	 *			=	xfree68_vndr/ataritt(us)+%l%(v)
   amiga		 *			=	xfree68_vndr/amiga(usa1)+%l%(v)
@@ -245,14 +245,14 @@
 # if variants_compat_mappings:
 ! model		layout[1]		variant[1]	=	symbols
 #     for e in variants_compat_mappings:
-  {e.source.model}	{e.source.layout}	{e.source.variant}	=	{e.destination.symbols_prefix}+{e.destination}
+  {e.source.model}	{e.source.layout}	{e.source.variant}	=	{e.destination[0].symbols_prefix}+{e.join(e.destination)}
 #     endfor
 
 # endif
 
 ! model		layout[1]			=	symbols
 # for e in layouts_compat_mappings:
-  {e.source.model}	{e.source.layout}	=	{e.destination.symbols_prefix}+{e.destination}
+  {e.source.model}	{e.source.layout}	=	{e.destination[0].symbols_prefix}+{e.join(e.destination)}
 # endfor
   ataritt	 *				=	xfree68_vndr/ataritt(us)+%l[1]%(v[1])
   amiga		 *				=	xfree68_vndr/amiga(usa1)+%l[1]%(v[1])
@@ -267,7 +267,7 @@
 
 ! model		layout[later]		=	symbols
 # for e in layouts_compat_mappings:
-  {e.source.model}	{e.source.layout}	=	+{e.destination}:%i
+  {e.source.model}	{e.source.layout}	=	+{e.join(e.destination, modifier="%i")}
 # endfor
   applealu_iso	 us			=	+macintosh_vndr/us(applealu_iso):%i
  $applealu	$macvendorlayouts	=	+macintosh_vndr/%l[%i]:%i
@@ -277,7 +277,7 @@
 # if variants_compat_mappings:
 ! model		layout[later]		variant[later]	=	symbols
 #     for e in variants_compat_mappings:
-  {e.source.model}	{e.source.layout}	{e.source.variant}	=	+{e.destination}:%i
+  {e.source.model}	{e.source.layout}	{e.source.variant}	=	+{e.join(e.destination, modifier="%i")}
 #     endfor
 
 # endif
