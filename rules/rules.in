@@ -16,7 +16,7 @@
 ###
 ### - Lines not starting with “#” are interpreted as a Python f-strings.
 ###
-###   Whenever possible, prefer using layout *ranges* than layout indexes, such
+###   Whenever possible, prefer using layout *ranges* than layout indices, such
 ###   as: `single`, `first`, `later` and `any`. They are documented at:
 ###   https://xkbcommon.org/doc/current/rule-file-format.html#grammar
 ###   They will be converted to the appropriate syntax when rendering in the
@@ -210,37 +210,23 @@
   sun_type7_unix_usb	=	sun(type7unix)
   *			=	pc(pc104)
 
-
 ! model		layout		variant	=	symbols
 # for e in migrations_variants_mappings:
-  {e.source.model}	{e.source.layout}	{e.source.variant}	=	{e.destination[0].symbols_prefix}+{e.join(e.destination)}
+  {e.source.model}	{e.source.layout}	{e.source.variant}	=	{e.destination_single[0].symbols_prefix}+{e.join(e.destination_single)}
 # endfor
 # for e in vendors_variants_mappings:
-  {e.source.model}	{e.source.layout}	{e.source.variant}	=	{e.destination[0].symbols_prefix}+{e.join(e.destination)}
+  {e.source.model}	{e.source.layout}	{e.source.variant}	=	{e.destination_single[0].symbols_prefix}+{e.join(e.destination_single)}
 # endfor
 
 ! model		 layout			=	symbols
-# for e in migrations_layouts_mappings:
-  {e.source.model}	{e.source.layout}	=	{e.destination[0].symbols_prefix}+{e.join(e.destination)}
-# endfor
-  ataritt	 *			=	xfree68_vndr/ataritt(us)+%l%(v)
-  amiga		 *			=	xfree68_vndr/amiga(usa1)+%l%(v)
-  blackberry-key2	us	        =	pc+blackberry_vndr/key2/us
   empty		 *			=	empty(basic)
   *		 empty			=	empty(basic)
-  jollasbj	 *			=	jolla_vndr/sbj(common)+%l%(v)
- $sun		$sun_custom		=	pc+sun_vndr/%l
-  pc98		 jp			=	nec_vndr/jp(pc98)+nec_vndr/jp(jp):2
-  pc98		 *			=	nec_vndr/jp(pc98)+%l%(v)
-  applealu_jis	 jp			=	macintosh_vndr/apple(alukbd)+macintosh_vndr/jp(usmac)+macintosh_vndr/jp(mac):2
-  applealu_jis	 us			=	macintosh_vndr/apple(alukbd)+macintosh_vndr/jp(usmac)
-  applealu_iso	 us			=	macintosh_vndr/apple(alukbd)+macintosh_vndr/us(applealu_iso)
- $applealu	$macvendorlayouts	=	macintosh_vndr/apple(alukbd)+macintosh_vndr/%l
- $applealu	 *			=	macintosh_vndr/apple(alukbd)+%l%(v)
- $olpc		$olpclayouts		=	olpc+%l%(m)
- $olpc		 *			=	olpc+%l%(v)
- $thinkpads	 br			=	pc+br(thinkpad)
- $sharp		 *			=	pc+sharp_vndr/%m(basic)
+# for e in migrations_layouts_mappings:
+  {e.source.model}	{e.source.layout}	=	{e.destination_single[0].symbols_prefix}+{e.join(e.destination_single)}
+# endfor
+# for e in vendors_layouts_mappings:
+  {e.source.model}	{e.source.layout}	=	{e.destination_single[0].symbols_prefix}+{e.join(e.destination_single)}
+# endfor
   *		 *			=	pc+%l%(v)
 
 ! model		layout[1]		variant[1]	=	symbols
@@ -252,28 +238,25 @@
 # endfor
 
 ! model		layout[1]			=	symbols
+  empty		 *				=	empty(basic)
+  *		 empty				=	empty(basic)
 # for e in migrations_layouts_mappings:
   {e.source.model}	{e.source.layout}	=	{e.destination[0].symbols_prefix}+{e.join(e.destination)}
 # endfor
-  ataritt	 *				=	xfree68_vndr/ataritt(us)+%l[1]%(v[1])
-  amiga		 *				=	xfree68_vndr/amiga(usa1)+%l[1]%(v[1])
-  jollasbj	 *				=	jolla_vndr/sbj(common)+%l[1]%(v[1])
- $sun		$sun_custom			=	pc+sun_vndr/%l[1]
-  applealu_jis	 jp				=	macintosh_vndr/apple(alukbd)+macintosh_vndr/jp(mac)
-  applealu_jis	 us				=	macintosh_vndr/apple(alukbd)+macintosh_vndr/jp(usmac)
-  applealu_iso	 us				=	macintosh_vndr/apple(alukbd)+macintosh_vndr/us(applealu_iso)
- $applealu	$macvendorlayouts		=	macintosh_vndr/apple(alukbd)+macintosh_vndr/%l[1]
- $applealu	 *				=	macintosh_vndr/apple(alukbd)+%l[1]%(v[1])
- $thinkpads	 br				=	pc+%l[1](thinkpad)
+# for e in vendors_layouts_mappings:
+  {e.source.model}	{e.source.layout}	=	{e.destination[0].symbols_prefix}+{e.join(e.destination)}
+# endfor
   *		 *				=	pc+%l[1]%(v[1])
 
 ! model		layout[later]		=	symbols
+  empty		 *			=	empty(basic)
+  *		 empty			=	empty(basic)
 # for e in migrations_layouts_mappings:
   {e.source.model}	{e.source.layout}	=	+{e.join(e.destination, modifier="%i")}
 # endfor
-  applealu_iso	 us			=	+macintosh_vndr/us(applealu_iso):%i
- $applealu	$macvendorlayouts	=	+macintosh_vndr/%l[%i]:%i
- $sun		$sun_custom		=	+sun_vndr/%l[%i]:%i
+# for e in vendors_layouts_mappings:
+  {e.source.model}	{e.source.layout}	=	+{e.join(e.destination, modifier="%i")}
+# endfor
   *		 *			=	+%l[%i]%(v[%i]):%i
 
 ! model		layout[later]		variant[later]	=	symbols

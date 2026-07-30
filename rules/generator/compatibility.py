@@ -91,27 +91,38 @@ class Layout:
 class CompatSymbolsMapping:
     source: Layout
     destination: tuple[Layout, ...]
+    _destination_single: tuple[Layout, ...] = ()
 
     @classmethod
     def parse(cls, raw: str, is_vendor_symbols: bool) -> Self:
         # Drop comment
         raw = raw.split("//")[0]
         parts = raw.split()
+        destination_single: tuple[Layout, ...] = ()
 
         if is_vendor_symbols:
-            if len(parts) != 4:
+            if not (4 <= len(parts) <= 5):
                 raise ValueError(raw)
             source = Layout.parse(parts[2], model=parts[0])
             destination = tuple(
                 Layout.parse(p, symbols_prefix=parts[1]) for p in parts[3].split("+")
             )
+            if len(parts) > 4:
+                destination_single = tuple(
+                    Layout.parse(p, symbols_prefix=parts[1])
+                    for p in parts[4].split("+")
+                )
         elif len(parts) == 2:
             source = Layout.parse(parts[0])
             destination = tuple(map(Layout.parse, parts[1].split("+")))
         else:
             raise ValueError(raw)
 
-        return cls(source=source, destination=destination)
+        return cls(
+            source=source,
+            destination=destination,
+            _destination_single=destination_single,
+        )
 
     @classmethod
     def parse_iter(
@@ -128,6 +139,10 @@ class CompatSymbolsMapping:
     def parse_array(cls, raw: str, is_vendor_symbols: bool) -> Iterable[Self]:
         lines = textwrap.dedent(raw).splitlines()
         yield from cls.parse_iter(lines, is_vendor_symbols=is_vendor_symbols)
+
+    @property
+    def destination_single(self) -> tuple[Layout, ...]:
+        return self._destination_single or self.destination
 
     def join(self, destination: tuple[Layout, ...], modifier: str = "", sep: str = "+"):
         return sep.join(

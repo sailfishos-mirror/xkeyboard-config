@@ -37,6 +37,7 @@ def generate_rules(
         compat=compat,
         migrations_layouts_mappings=[],
         migrations_variants_mappings=[],
+        vendors_layouts_mappings=[],
         vendors_variants_mappings=[],
         options=defaultdict(tuple),
     )
@@ -50,7 +51,7 @@ def generate_rules(
     # Compat mappings (aliases)
     compat_mappings = CompatMappings.load(
         migrations_path=RULES / "compat" / "migrations.lst" if compat else None,
-        vendors_path=RULES / "compat" / "variantsMapping-vendors.lst",
+        vendors_path=RULES / "compat" / "vendors.lst",
         skip_if_source_file_exists=True,
     )
 
@@ -64,7 +65,12 @@ def generate_rules(
         migrations_variants_mappings=sorted(
             e for e in compat_mappings.migrations if e.source.variant
         ),
-        vendors_variants_mappings=compat_mappings.vendors,
+        vendors_layouts_mappings=sorted(
+            e for e in compat_mappings.vendors if not e.source.variant
+        ),
+        vendors_variants_mappings=sorted(
+            e for e in compat_mappings.vendors if e.source.variant
+        ),
         options=options,
     )
     return RulesFile.render(rules.splitlines(), version=version, debug=debug)
