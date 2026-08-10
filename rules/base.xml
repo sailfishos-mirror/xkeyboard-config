@@ -1731,6 +1731,12 @@
             <description>Azerbaijani (Cyrillic)</description>
           </configItem>
         </variant>
+        <variant>
+          <configItem>
+            <name>standard</name>
+            <description>Azerbaijani (standard)</description>
+          </configItem>
+        </variant>
       </variantList>
     </layout>
     <layout>
