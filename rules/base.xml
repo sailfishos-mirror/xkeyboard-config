@@ -6884,6 +6884,17 @@
             </languageList>
           </configItem>
         </variant>
+        <variant>
+          <configItem>
+            <name>brahui</name>
+            <!-- Keyboard indicator for Brahui layouts -->
+            <shortDescription>brh</shortDescription>
+            <description>Brahui (Pakistan)</description>
+            <languageList>
+              <iso639Id>brh</iso639Id>
+            </languageList>
+          </configItem>
+        </variant>
       </variantList>
     </layout>
     <layout>
