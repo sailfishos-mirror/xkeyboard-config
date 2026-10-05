@@ -1889,6 +1889,41 @@
         </variant>
       </variantList>
     </layout>
+    <layout>
+      <configItem popularity="exotic">
+        <name>hr</name>
+        <shortDescription>hr</shortDescription>
+        <description>Croatian</description>
+        <countryList>
+          <iso3166Id>HR</iso3166Id>
+        </countryList>
+        <languageList>
+          <iso639Id>hrv</iso639Id>
+        </languageList>
+      </configItem>
+      <variantList>
+        <variant>
+          <configItem popularity="exotic">
+            <name>glag</name>
+            <description>Croatian (Glagolitic)</description>
+            <languageList>
+                <iso639Id>hrv</iso639Id>
+                <iso639Id>chu</iso639Id>
+            </languageList>
+          </configItem>
+        </variant>
+        <variant>
+          <configItem popularity="exotic">
+            <name>glagyz</name>
+            <description>Croatian (Glagolitic, Zemlja and Jeru swapped)</description>
+            <languageList>
+                <iso639Id>hrv</iso639Id>
+                <iso639Id>chu</iso639Id>
+            </languageList>
+          </configItem>
+        </variant>
+      </variantList>
+    </layout>
   </layoutList>
   <optionList>
     <group allowMultipleSelection="true">
